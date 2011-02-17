@@ -11,21 +11,21 @@
 (function($) {
     var methods = {
         init : function(options) {
-            var self = this;
             var defaults = {
                 url: "keepAlive.php",
                 timer: 600000 // 10min
             };
-            self.options = $.extend(defaults, options);
-            methods._poke.apply(self);
-            return self;
+            this.options = $.extend(defaults, options);
+            methods._poke.apply(this);
+            return this;
         },
         stop : function() {
-            clearTimeout(this.timer);
+            if(this.nextPoke)
+                clearTimeout(this.nextPoke);
         },
         _poke : function() {
             var self = this;
-            self.timer = setTimeout(function() {
+            this.nextPoke = setTimeout(function() {
                 $.ajax({
                     url: self.options.url,
                     cache: false
@@ -36,9 +36,9 @@
     };
 
     $.fn.keepAlive = function(method) {
-        if (methods[method] ) {
+        if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
-        } else if ( typeof method === 'object' || !method ) {
+        } else if (typeof method === 'object' || !method) {
             return methods.init.apply(this, arguments);
         } else {
             $.error("The method " +  method + " doesn't exist in $.fn.keepAlive");
